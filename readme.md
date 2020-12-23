@@ -21,4 +21,4 @@ On Linux/macOS with Python 3.7/3.8:
 ```bash
 pip install selenium 
 ``` 
-https://github.com/mozilla/geckodriver/releases
+<a href="https://github.com/mozilla/geckodriver/releases">🔗 geckodriver</a>
