@@ -90,9 +90,13 @@ class Insta:
             divUsers = scroll_box.find_elements_by_xpath('/html/body/div[5]/div/div/div[2]/ul/div/li')
             # userToFollow = [follow.find_element_by_xpath for follow in divUsers if follow.find_element_by_xpath("//button[contains(text(), 'Follow') and @class='sqdOP  L3NKy   y3zKF     ']")]
             
+            print("Analisamos ")
+            print(len(divUsers))
+            print("perfis")
+            print("\n")
             
             usersToFollow =[]
-            print("Separando apenas os FOLLOW")
+            print("Separando apenas os FOLLOW. \nEssa operação pode levar alguns minutos...")
             for item in divUsers:
                 arText = item.text.split("\n")
                 
@@ -145,6 +149,26 @@ class Insta:
                 if(len(self.firefox.find_elements_by_xpath("//*[contains(text(), 'This Account is Private')]")) > 0):
 				    continue
                 
+                # Assistindo stories
+                # stories = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/div[1]/div/div/div/ul/li[3]/div/div/div[1]/div/img")
+                sleep(1)
+                stories = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/header/div/div")
+                if(len(stories) > 0):
+                    stories[0].click()
+                    #clicando no próximo 
+                    sleep(2)
+                    continueStore = True
+                    while continueStore:
+                        # proximoStorie = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/div[1]/div/section/div/button/div")
+                        
+                        proximoStorie = self.firefox.find_elements_by_class_name("coreSpriteRightChevron")
+                        if(len(proximoStorie)>0):
+                            proximoStorie[0].click()
+                            sleep(2)
+                        else:
+                            continueStore = False
+
+                # Fim Assistindo stories
                 
                 abrirFotoOpacaoUm = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/div[2]/article/div/div/div[1]/div[1]")
                 abrirFotoOpacaoDois = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/div[3]/article/div/div/div[1]/div[1]")
