@@ -19,10 +19,10 @@ class Insta:
         self.firefox.find_element_by_xpath("//input[@name=\"username\"]").send_keys(user)
         self.firefox.find_element_by_xpath("//input[@name=\"password\"]").send_keys(pw)
         self.firefox.find_element_by_xpath('//button[@type="submit"]').click()
-        sleep(4)
+        sleep(8)
         self.firefox.find_element_by_xpath("//button[contains(text(), 'Not Now')]").click()
-        sleep(2)
-        self.firefox.find_element_by_xpath("//button[contains(text(), 'Not Now')]").click()
+        # sleep(2)
+        # self.firefox.find_element_by_xpath("//button[contains(text(), 'Not Now')]").click()
 
     def get_followers(self):
         # 'moda_fashion79','mulhermodaintima_'
@@ -96,12 +96,15 @@ class Insta:
             print("\n")
             
             usersToFollow =[]
+            countListUsers = 0
             print("Separando apenas os FOLLOW. \nEssa operação pode levar alguns minutos...")
             for item in divUsers:
                 arText = item.text.split("\n")
-                
-                if arText[len(arText)-1] == 'Follow':
-                    usersToFollow.append(arText[0])
+                if (len(arText)):
+                    if arText[len(arText)-1] == 'Follow':
+                        usersToFollow.append(arText[0])
+                        countListUsers +=1
+                        print(str(countListUsers)+': '+arText[0])
 
             print(len(usersToFollow))
             print(" Novos usuarios")
@@ -126,8 +129,11 @@ class Insta:
 
             # for u in names:
             # for u in not_following:
+            totalPessoasSeguidas = 0
             for u in usersToFollow:
                 # if(u != "detroitmetal1"):continue
+                totalPessoasSeguidas +=1
+                print(totalPessoasSeguidas)
                 self.firefox.get('https://www.instagram.com/'+ u)
                 sleep(1)
                 sleep(randrange(10))
@@ -310,8 +316,8 @@ menu=input("O que você gostaria de fazer? ")
 usuario=raw_input("qual é o seu usuario do instagram? ")
 senha=raw_input("qual eh a sua senha do instagram? ")
 
-usuarioInformado = usuario if usuario != '' else ""
-senhaInformada = senha if senha != '' else ""
+usuarioInformado = usuario if usuario != '' else "meuusuarioaqui"
+senhaInformada = senha if senha != '' else 'minhasenhaaqui'
 
 
 if menu==1:
@@ -319,10 +325,12 @@ if menu==1:
     bot = Insta(usuarioInformado,senhaInformada)
     bot.get_followers()
 elif menu==2:
+    # codar.me
     print("\n Seguir e curtir a última foto") 
     usersInput =raw_input("Pegar os usuários de quem: \n")
+    usersInputToGet = usersInput if usersInput != '' else "javascriptbr"
     bot = Insta(usuarioInformado,senhaInformada)
-    bot.folloOneByOne(usersInput)
+    bot.folloOneByOne(usersInputToGet)
 elif menu==3:
     print("\n Ver lista de quem nao te segue te volta") 
     bot = Insta(usuarioInformado,senhaInformada)
