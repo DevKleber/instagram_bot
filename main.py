@@ -4,6 +4,7 @@ from random import randrange
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 from time import sleep
+import credentials
 # from secrets import pw
 
 class Insta:
@@ -74,7 +75,7 @@ class Insta:
             self.firefox.find_element_by_xpath("//a[contains(@href,'/followers')]").click()
             sleep(3)
             
-            scroll_box = self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[2]")
+            scroll_box = self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[2]")
             totalScroll = 20
             qtdScroll=0
             print("---------------------------PEGANDO OS SEGUIDORES DO "+item+"-----------------------------------------")
@@ -97,8 +98,14 @@ class Insta:
             
             usersToFollow =[]
             countListUsers = 0
+            countDivUsers = 0
+            penultimaPessoaDaLista = (len(divUsers) - 1)
             print("Separando apenas os FOLLOW. \nEssa operação pode levar alguns minutos...")
             for item in divUsers:
+                countDivUsers +=1
+                if(penultimaPessoaDaLista == countDivUsers):
+                    break
+
                 arText = item.text.split("\n")
                 if (len(arText)):
                     if arText[len(arText)-1] == 'Follow':
@@ -152,8 +159,7 @@ class Insta:
                         sleep(2)
 
 
-                if(len(self.firefox.find_elements_by_xpath("//*[contains(text(), 'This Account is Private')]")) > 0):
-				    continue
+                if(len(self.firefox.find_elements_by_xpath("//*[contains(text(), 'This Account is Private')]")) > 0): continue
                 
                 # Assistindo stories
                 # stories = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/div[1]/div/div/div/ul/li[3]/div/div/div[1]/div/img")
@@ -180,8 +186,7 @@ class Insta:
                 abrirFotoOpacaoDois = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/div[3]/article/div/div/div[1]/div[1]")
                 abrirFotoOpacaoTres = self.firefox.find_elements_by_xpath("/html/body/div[1]/section/main/div/div[4]/article/div[1]/div/div[1]/div[1]")
                 
-                if(len(abrirFotoOpacaoUm) <= 0 and len(abrirFotoOpacaoDois) <=0 and len(abrirFotoOpacaoTres) <= 0):
-				    continue
+                if(len(abrirFotoOpacaoUm) <= 0 and len(abrirFotoOpacaoDois) <=0 and len(abrirFotoOpacaoTres) <= 0): continue
                 
                 if(len(abrirFotoOpacaoUm)):
                     abrirFotoOpacaoUm[0].click()
@@ -193,8 +198,7 @@ class Insta:
                 sleep(1.2)
                 
                 foto = self.firefox.find_elements_by_xpath("/html/body/div[5]/div[2]/div/article/div[2]/div/div")
-                if(len(foto) <= 0):
-                    continue
+                if(len(foto) <= 0): continue
                 
                 actionChains = self.actionChains(self.firefox)
                 actionChains.double_click(foto[0]).perform()
@@ -303,50 +307,51 @@ class Insta:
 
 print ("""
 ****************************Escolha uma opção****************************\n
-1 Seguir pessoas de forma rápida
-2 Seguir e curtir a última foto
-3 Ver lista de quem nao te segue te volta
-4 Parar de seguir quem nao te segue de volta
-5 Parar de seguir quem nao te segue de volta com exceções
-6 Fechar
+1 Follow fast
+2 Follow and like the last photo
+3 list user don't follow you back
+4 Stop following who doesn't follow you back
+5 Stop following those who don't follow you back with exceptions
+6 Close
 \n************************************************************************\n
 """)
 
 menu=input("O que você gostaria de fazer? ")
-usuario=raw_input("qual é o seu usuario do instagram? ")
-senha=raw_input("qual eh a sua senha do instagram? ")
+usuario=input("qual é o seu usuario do instagram? ")
+senha=input("qual eh a sua senha do instagram? ")
 
-usuarioInformado = usuario if usuario != '' else "meuusuarioaqui"
-senhaInformada = senha if senha != '' else 'minhasenhaaqui'
+usuarioInformado = usuario if usuario != '' else credentials.USER
+senhaInformada = senha if senha != '' else credentials.SECRET_PASS
 
+print (menu)
 
-if menu==1:
+if menu=="1":
     print("\n Seguir pessoas de forma rápida")
     bot = Insta(usuarioInformado,senhaInformada)
     bot.get_followers()
-elif menu==2:
+elif menu=="2":
     # codar.me
     print("\n Seguir e curtir a última foto") 
-    usersInput =raw_input("Pegar os usuários de quem: \n")
-    usersInputToGet = usersInput if usersInput != '' else "javascriptbr"
+    usersInput =input("Pegar os usuários de qual perfil?: \n")
+    usersInputToGet = usersInput if usersInput != '' else "imateus.silva"
     bot = Insta(usuarioInformado,senhaInformada)
     bot.folloOneByOne(usersInputToGet)
-elif menu==3:
+elif menu=="3":
     print("\n Ver lista de quem nao te segue te volta") 
     bot = Insta(usuarioInformado,senhaInformada)
     bot.get_unfollowers()
-elif menu==4:
+elif menu=="4":
     print("\n Parar de seguir quem nao te segue de volta\n")
     bot = Insta(usuarioInformado,senhaInformada)
     bot.stopFollowingUsersWhoDontFollowMe('')
-elif menu==5:
+elif menu=="5":
     print("\n Parar de seguir quem nao te segue de volta\n")
-    excecoes=raw_input("Excecoes de usuarios separado por virgula ex: user1,user2,user3,user4: ")
+    excecoes=input("Excecoes de usuarios separado por virgula ex: user1,user2,user3,user4: ")
     bot = Insta(usuarioInformado,senhaInformada)
     bot.stopFollowingUsersWhoDontFollowMe(excecoes)
     
     # bot.stopFollowingUsersWhoDontFollowMe()
-elif menu==6:
+elif menu=="6":
     print("\n Goodbye") 
 elif menu !="":
     print("\n Not Valid Choice Try again") 
