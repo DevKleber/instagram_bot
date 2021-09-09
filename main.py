@@ -213,13 +213,9 @@ class Insta:
         pathProgramFile = pathProgram+'/'+pathToSave+'.txt'
         self.firefox.get('https://www.instagram.com/'+ self.user)
         
+        followers = self.getMyFollowers()
+        following = self.getFollowing()
 
-        self.firefox.find_element_by_xpath("//a[contains(@href,'/{}')]".format(self.user)).click()
-        sleep(2)
-        self.firefox.find_element_by_xpath("//a[contains(@href,'/following')]").click()
-        following = self._get_names()
-        self.firefox.find_element_by_xpath("//a[contains(@href,'/followers')]").click()
-        followers = self._get_names()
         not_following_back = [user for user in following if user not in followers]
         
         # if(downloadFile):
@@ -259,12 +255,10 @@ class Insta:
             
 
     def getMyFollowers(self):
-        self.firefox.get('https://www.instagram.com/'+ self.user)
-        sleep(2)
-        self.firefox.find_element_by_xpath("//a[contains(@href,'/following')]").click()
+        self.firefox.find_element_by_xpath("//a[contains(@href,'/followers')]").click()
         sleep(1)
 
-        scroll_box = self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[2]")
+        scroll_box = self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[2]")
         
     
         last_ht, ht = 0, 1
@@ -279,18 +273,17 @@ class Insta:
         links = scroll_box.find_elements_by_tag_name('a')
         names = [name.text for name in links if name.text != '']
         # close button
-        self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[1]/div/div[2]/button")\
+        self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[1]/div/div[2]/button")\
             .click()
         return names
 
-    def _get_names(self):
-        sleep(2)
-        # sugs = self.firefox.find_element_by_xpath('//h4[contains(text(), Suggestions)]')
-        # if(sugs):
-        #     self.firefox.execute_script('arguments[0].scrollIntoView()', sugs)
-        #     sleep(2)
-        scroll_box = self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[2]")
+    def getFollowing(self):
+        self.firefox.find_element_by_xpath("//a[contains(@href,'/following')]").click()
+        sleep(1)
+
+        scroll_box = self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[3]")
         
+    
         last_ht, ht = 0, 1
         while last_ht != ht:
             last_ht = ht
@@ -299,6 +292,7 @@ class Insta:
                 arguments[0].scrollTo(0, arguments[0].scrollHeight); 
                 return arguments[0].scrollHeight;
                 """, scroll_box)
+
         links = scroll_box.find_elements_by_tag_name('a')
         names = [name.text for name in links if name.text != '']
         # close button
