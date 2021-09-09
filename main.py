@@ -61,11 +61,7 @@ class Insta:
             self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[1]/div/div[2]/button").click() # fechando janela          
 
 
-    def folloOneByOne(self,usersInput):
-        # modas_rbs
-        # ,'di_floor'
-        # roupa_atacado44
-        # users = ['di_floor']
+    def folloOneByOne(self,usersInput,qtdLimiteScroll=0):
         users = usersInput.split(',')
         
         for item in users:
@@ -76,19 +72,26 @@ class Insta:
             sleep(3)
             
             scroll_box = self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[2]")
-            totalScroll = 20
+            totalScroll = qtdLimiteScroll
             qtdScroll=0
             print("---------------------------PEGANDO OS SEGUIDORES DO "+item+"-----------------------------------------")
             last_ht, ht = 0, 1
             while last_ht != ht:
+                print(f"if {last_ht} != {ht}")
+                qtdScroll = qtdScroll + 1
                 last_ht = ht
+                print(f"qtdScroll: {qtdScroll}. Totalscroll: {totalScroll}")
                 sleep(1)
                 ht = self.firefox.execute_script("""
                     arguments[0].scrollTo(0, arguments[0].scrollHeight); 
                     return arguments[0].scrollHeight;
                     """, scroll_box)
+                if(totalScroll > 0):
+                    if(qtdScroll == totalScroll):
+                        last_ht = 0
+                        ht = 0
                 
-            divUsers = scroll_box.find_elements_by_xpath('/html/body/div[5]/div/div/div[2]/ul/div/li')
+            divUsers = scroll_box.find_elements_by_xpath('/html/body/div[6]/div/div/div[2]/ul/div/li')
             # userToFollow = [follow.find_element_by_xpath for follow in divUsers if follow.find_element_by_xpath("//button[contains(text(), 'Follow') and @class='sqdOP  L3NKy   y3zKF     ']")]
             
             print("Analisamos ")
@@ -123,7 +126,7 @@ class Insta:
             # names = [name.text for name in links if name.text != '']
                
             # print(names)
-            self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[1]/div/div[2]/button").click() # fechando janela
+            self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[1]/div/div[2]/button").click() # fechando janela
             
             # arrumar essa parte
             # entrando no meu perfil para comparar as pessoas que eu já sigo, porém já resolvi esse problema em cima.
@@ -196,8 +199,7 @@ class Insta:
                     abrirFotoOpacaoTres[0].click()
 
                 sleep(1.2)
-                
-                foto = self.firefox.find_elements_by_xpath("/html/body/div[5]/div[2]/div/article/div[2]/div/div")
+                foto = self.firefox.find_elements_by_xpath("/html/body/div[6]/div[2]/div/article/div[2]/div/div")
                 if(len(foto) <= 0): continue
                 
                 actionChains = self.actionChains(self.firefox)
@@ -209,7 +211,7 @@ class Insta:
         pathToSave = 'unfollowersList/unfollowersList'+self.user
         pathProgram = (os.path.dirname(os.path.abspath(__file__)))
         pathProgramFile = pathProgram+'/'+pathToSave+'.txt'
-        
+        self.firefox.get('https://www.instagram.com/'+ self.user)
         
 
         self.firefox.find_element_by_xpath("//a[contains(@href,'/{}')]".format(self.user)).click()
@@ -234,7 +236,6 @@ class Insta:
     def stopFollowingUsersWhoDontFollowMe(self,excecoes):
         userExcecoes = excecoes.split(',')
         users = self.get_unfollowers(False)
-        
         if(len(userExcecoes)>0):
             users = [user for user in users if user not in userExcecoes]
 
@@ -288,7 +289,7 @@ class Insta:
         # if(sugs):
         #     self.firefox.execute_script('arguments[0].scrollIntoView()', sugs)
         #     sleep(2)
-        scroll_box = self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[2]")
+        scroll_box = self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[2]")
         
         last_ht, ht = 0, 1
         while last_ht != ht:
@@ -301,7 +302,7 @@ class Insta:
         links = scroll_box.find_elements_by_tag_name('a')
         names = [name.text for name in links if name.text != '']
         # close button
-        self.firefox.find_element_by_xpath("/html/body/div[5]/div/div/div[1]/div/div[2]/button")\
+        self.firefox.find_element_by_xpath("/html/body/div[6]/div/div/div[1]/div/div[2]/button")\
             .click()
         return names
 
@@ -330,12 +331,13 @@ if menu=="1":
     bot = Insta(usuarioInformado,senhaInformada)
     bot.get_followers()
 elif menu=="2":
-    # codar.me
     print("\n Seguir e curtir a última foto") 
     usersInput =input("Pegar os usuários de qual perfil?: \n")
+    limiteScroll=int(input("Voce quer fazer quantos scrolls na lista de usuarios? 0 para ilimitado "))
+    usersLimiteScroll = limiteScroll if limiteScroll != '' else 0
     usersInputToGet = usersInput if usersInput != '' else "imateus.silva"
     bot = Insta(usuarioInformado,senhaInformada)
-    bot.folloOneByOne(usersInputToGet)
+    bot.folloOneByOne(usersInputToGet, usersLimiteScroll)
 elif menu=="3":
     print("\n Ver lista de quem nao te segue te volta") 
     bot = Insta(usuarioInformado,senhaInformada)
