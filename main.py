@@ -234,8 +234,11 @@ class Insta:
         users = self.get_unfollowers(False)
         if(len(userExcecoes)>0):
             users = [user for user in users if user not in userExcecoes]
-
+        i = 0
         for user in users:
+            i +=1
+            print()
+            print(f"{i} de {len(users)}")
             self.firefox.get('https://www.instagram.com/'+ user)
             sleep(1)
             sleep(randrange(10))
@@ -252,6 +255,7 @@ class Insta:
             sleep(randrange(3))
             self.firefox.find_element_by_xpath("//button[contains(text(),'Unfollow')]").click()
             sleep(1)
+            sleep(randrange(10))
             
 
     def getMyFollowers(self):
