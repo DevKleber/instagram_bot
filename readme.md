@@ -42,3 +42,9 @@ touch credentials.py
 USER = 'your user'
 SECRET_PASS = 'your password'
 ```
+
+# run
+```
+sudo python3 -m pip install --upgrade requests
+```
+
